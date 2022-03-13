@@ -14,13 +14,17 @@ from sklearn.preprocessing import StandardScaler
 #Encoding catagorical data
 data1 = pd.read_csv('data_input.csv')
 data2 = pd.read_csv('data_output.csv')
+test = pd.read_csv('data_next.csv')
 data1 = data1.fillna(0)
 data2 = data2.fillna(0)
+test = test.fillna(0)
 print(data1)
 print(data2)
 
 x = data1.iloc[:,1:].values
 y = data2.iloc[:,1].values
+t = test.iloc[:,1:].values
+#print(t)
 train = pd.concat([data1.iloc[:,1:],data2.iloc[:,1:]], axis = 1)
 print(train)
 #Encoding catagorical data1
@@ -28,6 +32,8 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 labelencoder_x_1 = LabelEncoder()
 #print(x[:, 13])
 x[:, 13] = labelencoder_x_1.fit_transform(x[:, 13])
+t[:, 13] = labelencoder_x_1.fit_transform(t[:, 13])
+print(t)
 
 #splitting train and test
 from sklearn.model_selection import train_test_split
@@ -39,6 +45,9 @@ from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
 x_test = sc.transform(x_test)
+t = sc.transform(t)
+print("This is test_data:")
+print(t)
 
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
@@ -71,20 +80,26 @@ print(model)
 #layers =[[20], [40,20], [45,30,15], [128, 256, 256, 256]]
 layers =[[45,30,15]]
 activations = ['relu']
-param_grid = dict(layers=layers, activation=activations, batch_size = [128], epochs=[30])
+param_grid = dict(layers=layers, activation=activations, batch_size = [128,256], epochs=[30])
 grid = GridSearchCV(estimator=model, param_grid=param_grid)
 
 grid_result = grid.fit(x_train, y_train)
 
 print([grid_result.best_score_,grid_result.best_params_])
 y_pred = grid.predict(x_test)
+t_pred = grid.predict(t)
+print(t_pred)
+print(type(t_pred))
 
 from sklearn.metrics import confusion_matrix
 pred = pd.DataFrame(y_pred, columns = ['prediction'])
 test = pd.DataFrame(y_test, columns = ['test'])
-print(type(y_pred))
-print(type(y_test))
+#print(type(y_pred))
+#print(type(y_test))
 pred_test = pd.concat([pred, test], axis=1)
 print(pred_test)
 print(pred_test.shape)
 pred_test.to_csv("pred_test.csv")
+
+print("prediction: ")
+print(t_pred)

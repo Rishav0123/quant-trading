@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 #Data Source
 import yfinance as yf
