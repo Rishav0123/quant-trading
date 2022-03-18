@@ -15,17 +15,24 @@ from sklearn.preprocessing import StandardScaler
 data1 = pd.read_csv('data_input.csv')
 data2 = pd.read_csv('data_output.csv')
 test = pd.read_csv('data_next.csv')
+
+result = pd.DataFrame(columns = ['Prediction', 'Close'])
+result.to_csv("result.csv")
 data1 = data1.fillna(0)
 data2 = data2.fillna(0)
 test = test.fillna(0)
-print(data1)
-print(data2)
+
+#print("Input with 0")
+#print(data1)
+#print("Ouput with 0")
+#print(data2)
 
 x = data1.iloc[:,1:].values
 y = data2.iloc[:,1].values
 t = test.iloc[:,1:].values
 #print(t)
 train = pd.concat([data1.iloc[:,1:],data2.iloc[:,1:]], axis = 1)
+print("Full data: ")
 print(train)
 #Encoding catagorical data1
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
@@ -88,10 +95,11 @@ grid_result = grid.fit(x_train, y_train)
 print([grid_result.best_score_,grid_result.best_params_])
 y_pred = grid.predict(x_test)
 t_pred = grid.predict(t)
+print("predict data: ")
 print(t_pred)
 print(type(t_pred))
 
-from sklearn.metrics import confusion_matrix
+#from sklearn.metrics import confusion_matrix
 pred = pd.DataFrame(y_pred, columns = ['prediction'])
 test = pd.DataFrame(y_test, columns = ['test'])
 #print(type(y_pred))
@@ -100,6 +108,3 @@ pred_test = pd.concat([pred, test], axis=1)
 print(pred_test)
 print(pred_test.shape)
 pred_test.to_csv("pred_test.csv")
-
-print("prediction: ")
-print(t_pred)
